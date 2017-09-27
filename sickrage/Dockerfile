@@ -28,9 +28,15 @@ VOLUME /media
 
 EXPOSE 8081
 
+CMD [ "cp", "-v", "/opt/sickrage/runscripts/init.debian", "/etc/init.d/sickrage" ]
+CMD [ "chown", "root:root", "/etc/init.d/sickrage" ]
+CMD [ "chmod", "644", "/etc/init.d/sickrage" ]
+
+CMD [ "service", "sickrage", "start" ]
+
 #GO
 # RUN python /opt/sickrage/SickBeard.py -d >> /home/debug.txt
-CMD [ "/usr/bin/python", "/opt/sickrage/SickBeard.py", "--datadir=/config", "--config=/config/config.ini" ]
+# CMD [ "/usr/bin/python", "/opt/sickrage/SickBeard.py", "--datadir=/config", "--config=/config/config.ini" ]
 
 ##
 ## docker run -p 127.0.0.1:8081:8081 -v /Users/victorpiolin/Code/Local/docker/sickrage/media:/media -v /Users/victorpiolin/Code/Local/docker/sickrage/dowload:/downloads --name sicksick -d -ti sickrage
