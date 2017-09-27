@@ -18,7 +18,10 @@ pip install pyopenssl && \
 # Install SickRage
 git clone https://github.com/SickRageTV/SickRage.git /opt/sickrage && \
 chown -R root:root /opt/sickrage && \
-pip install --user -U -r /opt/sickrage/requirements.txt
+pip install --user -U -r /opt/sickrage/requirements.txt && \
+cp -v /opt/sickrage/runscripts/init.debian /etc/init.d/sickrage && \
+chown root:root /etc/init.d/sickrage && \
+chmod 644 /etc/init.d/sickrage
 
 # Downloads directory
 VOLUME /downloads
@@ -27,10 +30,6 @@ VOLUME /downloads
 VOLUME /media
 
 EXPOSE 8081
-
-CMD [ "cp", "-v", "/opt/sickrage/runscripts/init.debian", "/etc/init.d/sickrage" ]
-CMD [ "chown", "root:root", "/etc/init.d/sickrage" ]
-CMD [ "chmod", "644", "/etc/init.d/sickrage" ]
 
 CMD [ "service", "sickrage", "start" ]
 
