@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.5
 MAINTAINER VictorPiolin ( victorpiolin@gmail.com )
 
 ### Install Sickrage
@@ -37,4 +37,4 @@ EXPOSE 8081
 
 COPY default /etc/default/sickrage
 
-CMD [ "/usr/bin/python", "/opt/sickrage/SickBeard.py", "--datadir=/config", "--config=/config/config.ini" ] 
+CMD [ "/usr/bin/python", "/opt/sickrage/SickBeard.py", "--datadir=/config", "--config=/config/config.ini" ]
