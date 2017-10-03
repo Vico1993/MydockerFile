@@ -1,42 +1,40 @@
-FROM debian
+FROM alpine:latest
 MAINTAINER VictorPiolin ( victorpiolin@gmail.com )
 
-# Install dependencies
-RUN apt-get update && \
-apt-get upgrade -y && \
-apt-get install python-pip python-dev git-core libssl-dev libxslt1-dev libxslt1.1 libxml2-dev libxml2 libssl-dev libffi-dev build-essential wget -y && \
+### Install Sickrage
+RUN apk --no-cache upgrade && \
+    apk add --no-cache --virtual=build-deps \
+      make \
+      gcc \
+      g++ \
+      python-dev \
+      py2-pip \
+      libressl-dev \
+      libffi-dev && \
+    apk add --no-cache --virtual=run-deps \
+      ca-certificates \
+      python \
+      py-libxml2 \
+      py-lxml \
+      unrar  \
+      su-exec \
+      git && \
+    pip --no-cache-dir install --upgrade setuptools && \
+    pip --no-cache-dir install --upgrade pyopenssl cheetah requirements && \
+    git clone --depth 1 https://github.com/SickRage/SickRage.git /opt/sickrage && \
+    apk del --no-cache --purge \
+    build-deps  && \
+    rm -rf /opt/sickrage/.git* \
+           /tmp/* \
+           /var/cache/apk/*  \
+           /var/tmp/*
 
-wget http://rarlab.com/rar/unrarsrc-5.2.7.tar.gz && \
-tar -xvf unrarsrc-5.2.7.tar.gz && \
-cd unrar && \
-make -f makefile && \
-install -v -m755 unrar /usr/bin && \
+### Volumes
+VOLUME [ "/media" ]
 
-# Install OpenSSL
-pip install pyopenssl && \
-
-# Install SickRage
-git clone https://github.com/SickRageTV/SickRage.git /opt/sickrage && \
-chown -R root:root /opt/sickrage && \
-pip install --user -U -r /opt/sickrage/requirements.txt && \
-cp -v /opt/sickrage/runscripts/init.debian /etc/init.d/sickrage && \
-chown root:root /etc/init.d/sickrage && \
-chmod 644 /etc/init.d/sickrage
-
-# Downloads directory
-VOLUME /downloads
-
-# Media directory
-VOLUME /media
-
+### EXPOSES
 EXPOSE 8081
 
-CMD [ "service", "sickrage", "start" ]
+COPY default /etc/default/sickrage
 
-#GO
-# RUN python /opt/sickrage/SickBeard.py -d >> /home/debug.txt
-# CMD [ "/usr/bin/python", "/opt/sickrage/SickBeard.py", "--datadir=/config", "--config=/config/config.ini" ]
-
-##
-## docker run -p 127.0.0.1:8081:8081 -v /Users/victorpiolin/Code/Local/docker/sickrage/media:/media -v /Users/victorpiolin/Code/Local/docker/sickrage/dowload:/downloads --name sicksick -d -ti sickrage
-##
+CMD [ "/usr/bin/python", "/opt/sickrage/SickBeard.py", "--datadir=/config", "--config=/config/config.ini" ] 
